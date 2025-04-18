@@ -1,9 +1,9 @@
 [Adblock Plus]
-! Title: OSINT Tracking Blocklist
-! Description: Domains from Joeylane's OSINT tracking list
+! Title: Joeylane OSINT Tracker Blocklist
+! Description: Domains from Joeylane's OSINT tracker list reformatted for AdGuard
 ! Homepage: https://github.com/equivisync/network-data
 ! Expires: 1 day
-! Last modified: 18 Apr 2025 20:21 UTC
+! Last modified: 18 Apr 2025 20:34 UTC
 ! Syntax: Adblock
 ! Number of entries: auto
 !
