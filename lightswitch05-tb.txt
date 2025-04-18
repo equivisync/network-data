@@ -1,9 +1,9 @@
 [Adblock Plus]
-! Title: Lightswitch05 Extended Blocklist
-! Description: Tracking domains extracted from Lightswitch05’s extended list
+! Title: Lightswitch05 Tracking Blocklist
+! Description: Domains from Lightswitch05's aggressive tracking list
 ! Homepage: https://github.com/equivisync/network-data
 ! Expires: 1 day
-! Last modified: 18 Apr 2025 19:57 UTC
+! Last modified: 18 Apr 2025 20:10 UTC
 ! Syntax: Adblock
 ! Number of entries: auto
 !
