@@ -1,0 +1,7 @@
+[Adblock Plus]
+! Title: hagezi-ti (TB Ver)
+! Description: Converted for AdGuard use.
+! Expires: 1 day
+! Last modified: 18 Apr 2025 19:36 UTC
+! Syntax: Adblock
+!
