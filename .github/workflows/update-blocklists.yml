@@ -15,10 +15,9 @@ jobs:
       - name: Download raw lists
         run: |
           mkdir -p rawlists
-          curl -L https://raw.githubusercontent.com/hagezi/dns-blocklists/main/dns-ti/intelligence.txt -o rawlists/hagezi-ti-raw.txt
-          curl -L https://raw.githubusercontent.com/joeylane/osint-blocklist/main/osint-trackers.txt -o rawlists/osint-raw.txt
           curl -L https://raw.githubusercontent.com/joeylane/osint-blocklist/main/osint-trackers.txt -o rawlists/osint-trackers-raw.txt
-          curl -L https://raw.githubusercontent.com/0xERR0R/blocklist/main/abp_domains.txt -o rawlists/0xerr-raw.txt
+          curl -L https://raw.githubusercontent.com/joeylane/osint-blocklist/main/osint-tracking.txt -o rawlists/osint-tracking-raw.txt
+          curl -L https://raw.githubusercontent.com/hagezi/dns-blocklists/main/dns/threat-intelligence/ti-default.list -o rawlists/hagezi-ti-raw.txt
 
       - name: Format lists for AdGuard
         run: |
@@ -28,22 +27,26 @@ jobs:
             local title=$3
             local description=$4
 
-            echo "[Adblock Plus]" > "$output_file"
-            echo "! Title: $title" >> "$output_file"
-            echo "! Description: $description" >> "$output_file"
-            echo "! Homepage: https://github.com/equivisync/network-data" >> "$output_file"
-            echo "! Expires: 1 day" >> "$output_file"
-            echo "! Last modified: $(date -u "+%d %b %Y %H:%M UTC")" >> "$output_file"
-            echo "! Syntax: Adblock" >> "$output_file"
-            echo "! Number of entries: auto" >> "$output_file"
-            echo "!" >> "$output_file"
-            grep -vE '^#|^$' "$input_file" >> "$output_file"
+            echo "[Adblock Plus]" > $output_file
+            echo "! Title: $title" >> $output_file
+            echo "! Description: $description" >> $output_file
+            echo "! Homepage: https://github.com/equivisync/network-data" >> $output_file
+            echo "! Expires: 1 day" >> $output_file
+            echo "! Last modified: $(date -u +"%d %b %Y %H:%M UTC")" >> $output_file
+            echo "! Syntax: Adblock" >> $output_file
+            echo "! Number of entries: auto" >> $output_file
+            echo "!" >> $output_file
+
+            grep -ve '^#\|^$\|^!' "$input_file" \
+            | awk '{print $1}' \
+            | grep -Eo '([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}' \
+            | sort -u \
+            | sed 's/^/||/; s/$/^/' >> "$output_file"
           }
 
-          format_list rawlists/hagezi-ti-raw.txt hagezi-ti-tb.txt "HaGeZi TI Default Blocklist" "Threat Intelligence Default blocklist by HaGeZi"
-          format_list rawlists/osint-raw.txt osint-tb.txt "OSINT Tracking Blocklist" "Tracking domains compiled from OSINT sources"
-          format_list rawlists/osint-trackers-raw.txt osint-trackers-tb.txt "OSINT Trackers Blocklist" "Tracker domains compiled from OSINT sources"
-          format_list rawlists/0xerr-raw.txt 0xerr-tb.txt "0xERR0R Tracking Blocklist" "Domains from 0xERR0R's aggressive tracking list"
+          format_list rawlists/osint-trackers-raw.txt osint-trackers-tb.txt "OSINT Trackers Blocklist" "Domains from the OSINT Trackers list"
+          format_list rawlists/osint-tracking-raw.txt osint-tb.txt "OSINT Tracking Blocklist" "Domains from the OSINT Tracking list"
+          format_list rawlists/hagezi-ti-raw.txt hagezi-ti-tb.txt "HaGeZi Threat Intelligence Default Blocklist" "Domains from HaGeZi TI Default list"
 
       - name: Commit and push updates
         run: |
