@@ -1,0 +1,28 @@
+name: Update Blocklists
+
+on:
+  schedule:
+    - cron: "0 5 * * *"
+  workflow_dispatch:
+
+jobs:
+  update-blocklists:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download updated blocklists
+        run: |
+          curl -L https://raw.githubusercontent.com/0xERR0R/blocklist/main/hosts.txt -o 0xerr-tracking-tb.txt
+          curl -L https://raw.githubusercontent.com/lightswitch05/hosts/master/tracking-aggressive-list.txt -o lightswitch05-extended-tb.txt
+          curl -L https://raw.githubusercontent.com/joeylane/osint-blocklist/main/osint-trackers.txt -o osint-trackers-tb.txt
+          curl -L https://raw.githubusercontent.com/hagezi/dns-blocklists/main/dns/threat-intelligence/ti.txt -o ti-default-hagezi-tb.txt
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "Ghost Updater"
+          git config --global user.email "ghost@nowhere.local"
+          git add .
+          git commit -m "Daily blocklist update"
+          git push
