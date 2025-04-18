@@ -1,10 +1,9 @@
 [Adblock Plus]
-! Title: HaGeZi TI Default Blocklist
-! Description: Threat Intelligence Default blocklist by HaGeZi
+! Title: HaGeZi Threat Intelligence Default Blocklist
+! Description: Domains from HaGeZi TI Default list
 ! Homepage: https://github.com/equivisync/network-data
 ! Expires: 1 day
-! Last modified: 18 Apr 2025 20:47 UTC
+! Last modified: 18 Apr 2025 20:58 UTC
 ! Syntax: Adblock
 ! Number of entries: auto
 !
-404: Not Found
