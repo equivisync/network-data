@@ -1,0 +1,6 @@
+! Title: 0xERR Tracking & Analytics Blocklist (TB Version)
+! Description: Adapted for AdGuard for iOS
+! Updated: 2025-04-18
+! Source: 0xERR Blocklist
+
+! Placeholder - real entries will appear here.
