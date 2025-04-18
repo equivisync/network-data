@@ -1,7 +1,9 @@
 [Adblock Plus]
-! Title: 0xerr (TB Ver)
-! Description: Converted for AdGuard use.
+! Title: 0xERR0R Tracking Blocklist
+! Description: Domains from 0xERR0R’s aggressive tracking list
+! Homepage: https://github.com/equivisync/network-data
 ! Expires: 1 day
-! Last modified: 18 Apr 2025 19:36 UTC
+! Last modified: 18 Apr 2025 19:57 UTC
 ! Syntax: Adblock
+! Number of entries: auto
 !
