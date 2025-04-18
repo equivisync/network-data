@@ -15,30 +15,47 @@ jobs:
       - name: Download raw lists
         run: |
           mkdir -p rawlists
-          curl -L https://raw.githubusercontent.com/0xERR0R/blocklist/main/hosts.txt -o rawlists/0xerr-raw.txt
-          curl -L https://raw.githubusercontent.com/lightswitch05/hosts/master/tracking-aggressive.list -o rawlists/lightswitch05-raw.txt
-          curl -L https://raw.githubusercontent.com/joeylane/osint-blocklist/main/osint-trackers.list -o rawlists/osint-raw.txt
-          curl -L https://raw.githubusercontent.com/hagezi/dns-blocklists/main/dns/threat-intelligence/default.txt -o rawlists/hagezi-ti-raw.txt
+          curl -sL https://raw.githubusercontent.com/0xERR0R/blocklist/main/hosts.txt -o rawlists/0xerr-raw.txt
+          curl -sL https://raw.githubusercontent.com/lightswitch05/hosts/master/tracking-aggressive.list -o rawlists/lightswitch05-raw.txt
+          curl -sL https://raw.githubusercontent.com/joeylane/osint-blocklist/main/osint-trackers.list -o rawlists/osint-raw.txt
+          curl -sL https://raw.githubusercontent.com/hagezi/dns-blocklists/main/dns/threat-intelligence-blocklist.txt -o rawlists/hagezi-ti-raw.txt
 
       - name: Format lists for AdGuard
         run: |
-          for file in rawlists/*.txt; do
-            base=$(basename "$file" -raw.txt)
-            output="${base}-tb.txt"
-            echo "[Adblock Plus]" > "$output"
-            echo "! Title: $base (TB Ver)" >> "$output"
-            echo "! Description: Converted for AdGuard use." >> "$output"
-            echo "! Expires: 1 day" >> "$output"
-            echo "! Last modified: $(date -u +"%d %b %Y %H:%M UTC")" >> "$output"
-            echo "! Syntax: Adblock" >> "$output"
-            echo "!" >> "$output"
-            grep -vE '^(!|#|\[|$)' "$file" | grep -Eo '([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})' | sort -u | sed 's/^/||/' | sed 's/$/\^/' >> "$output"
-          done
+          format_list() {
+            local input_file=$1
+            local output_file=$2
+            local title=$3
+            local description=$4
+
+            echo "[Adblock Plus]" > $output_file
+            echo "! Title: $title" >> $output_file
+            echo "! Description: $description" >> $output_file
+            echo "! Homepage: https://github.com/equivisync/network-data" >> $output_file
+            echo "! Expires: 1 day" >> $output_file
+            echo "! Last modified: $(date -u +"%d %b %Y %H:%M UTC")" >> $output_file
+            echo "! Syntax: Adblock" >> $output_file
+            echo "! Number of entries: auto" >> $output_file
+            echo "!" >> $output_file
+
+            grep -vE '^#|^$' $input_file |
+            grep -Eo '([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})' |
+            sort -u |
+            sed 's/^/||/' |
+            sed 's/$/^/' >> $output_file
+          }
+
+          format_list rawlists/0xerr-raw.txt 0xerr-tb.txt "0xERR0R Tracking Blocklist" "Domains from 0xERR0R’s aggressive tracking list"
+          format_list rawlists/lightswitch05-raw.txt lightswitch05-tb.txt "Lightswitch05 Extended Blocklist" "Tracking domains extracted from Lightswitch05’s extended list"
+          format_list rawlists/osint-raw.txt osint-tb.txt "OSINT Trackers Blocklist" "Domains related to OSINT tracking, scraping, and monitoring activities"
+          format_list rawlists/hagezi-ti-raw.txt hagezi-ti-tb.txt "HaGeZi Threat Intelligence Blocklist" "Threat intelligence domains aggregated by HaGeZi"
 
       - name: Commit and push updates
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           git config --global user.name "Ghost Updater"
           git config --global user.email "ghost@nowhere.local"
           git add *.txt
-          git commit -m "Daily blocklist auto-update"
-          git push
+          git commit -m "Daily blocklist auto-update" || echo "No changes to commit"
+          git push https://$GH_TOKEN@github.com/equivisync/network-data.git
