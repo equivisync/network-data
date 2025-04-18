@@ -1,4 +1,4 @@
-name: Update Blocklists
+name: Update Blocklists and Format for AdGuard
 
 on:
   schedule:
@@ -8,21 +8,51 @@ on:
 jobs:
   update-blocklists:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Download updated blocklists
+      - name: Download raw lists
         run: |
-          curl -L https://raw.githubusercontent.com/0xERR0R/blocklist/main/hosts.txt -o 0xerr-tracking-tb.txt
-          curl -L https://raw.githubusercontent.com/lightswitch05/hosts/master/tracking-aggressive-list.txt -o lightswitch05-extended-tb.txt
-          curl -L https://raw.githubusercontent.com/joeylane/osint-blocklist/main/osint-trackers.txt -o osint-trackers-tb.txt
-          curl -L https://raw.githubusercontent.com/hagezi/dns-blocklists/main/dns/threat-intelligence/ti.txt -o ti-default-hagezi-tb.txt
+          mkdir -p rawlists
+          curl -sL https://raw.githubusercontent.com/0xERR0R/blocklist/main/hosts.txt -o rawlists/0xerr-raw.txt
+          curl -sL https://raw.githubusercontent.com/lightswitch05/hosts/master/tracking-aggressive-list.txt -o rawlists/lightswitch05-raw.txt
+          curl -sL https://raw.githubusercontent.com/joeylane/osint-blocklist/main/osint-trackers.txt -o rawlists/osint-raw.txt
+          curl -sL https://raw.githubusercontent.com/hagezi/dns-blocklists/main/dns/threat-intelligence/ti.txt -o rawlists/hagezi-ti-raw.txt
 
-      - name: Commit and push changes
+      - name: Format lists for AdGuard
+        run: |
+          format_list() {
+            local input_file=$1
+            local output_file=$2
+            local title=$3
+            local description=$4
+
+            echo "[Adblock Plus]" > $output_file
+            echo "! Title: ${title}" >> $output_file
+            echo "! Description: ${description}" >> $output_file
+            echo "! Homepage: https://github.com/equivisync/network-data" >> $output_file
+            echo "! Expires: 1 day" >> $output_file
+            echo "! Last modified: $(date -u "+%d %b %Y %H:%M UTC")" >> $output_file
+            echo "! Syntax: Adblock" >> $output_file
+            echo "" >> $output_file
+
+            grep -vE '^(#|$)' $input_file | \
+            grep -Eo '([a-zA-Z0-9-]+\.)+[a-zA-Z]+' | \
+            sort -u | \
+            sed 's/^/||/' | sed 's/$/^/' >> $output_file
+          }
+
+          format_list rawlists/0xerr-raw.txt 0xerr-tracking-tb.txt "Equivisync 0xERR Tracking Filter" "Daily refreshed version of 0xERR DNS tracking blocklist."
+          format_list rawlists/lightswitch05-raw.txt lightswitch05-extended-tb.txt "Equivisync Lightswitch05 Extended Filter" "Daily refreshed version of Lightswitch05 Aggressive Tracking List."
+          format_list rawlists/osint-raw.txt osint-trackers-tb.txt "Equivisync OSINT Tracker Filter" "Daily refreshed version of Joeylane's OSINT Tracker List."
+          format_list rawlists/hagezi-ti-raw.txt ti-default-hagezi-tb.txt "Equivisync HaGeZi TI Default Filter" "Daily refreshed version of HaGeZi Threat Intelligence Default List."
+
+      - name: Commit and push updates
         run: |
           git config --global user.name "Ghost Updater"
           git config --global user.email "ghost@nowhere.local"
-          git add .
-          git commit -m "Daily blocklist update"
+          git add *.txt
+          git commit -m "Daily blocklist auto-update [skip ci]" || echo "No changes to commit"
           git push
