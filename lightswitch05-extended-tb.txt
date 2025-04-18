@@ -1,0 +1,6 @@
+! Title: Lightswitch05 Extended Ads & Tracking (TB Version)
+! Description: Adapted for AdGuard for iOS
+! Updated: 2025-04-18
+! Source: Lightswitch05 Ads and Tracking Extended
+
+! Placeholder - real entries will appear here.
