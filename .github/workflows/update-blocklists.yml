@@ -17,9 +17,8 @@ jobs:
       run: |
         mkdir -p rawlists
         curl -L https://raw.githubusercontent.com/0xERR0R/blocklist/main/ads-and-tracking-filter.txt -o rawlists/0xerr-raw.txt
-        curl -L https://raw.githubusercontent.com/lightswitch05/hosts/master/tracking-aggressive-extended.txt -o rawlists/lightswitch05-raw.txt
         curl -L https://raw.githubusercontent.com/joeylane/osint-blocklist/main/osint-trackers.txt -o rawlists/osint-raw.txt
-        curl -L https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/pro.txt -o rawlists/hagezi-ti-raw.txt
+        curl -L https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/threat-intelligence.txt -o rawlists/hagezi-ti-raw.txt
 
     - name: Format lists for AdGuard
       run: |
@@ -40,16 +39,15 @@ jobs:
           echo "!" >> $output_file
 
           grep -vE '^#|^$' "$input_file" \
-          | awk '{print $1}' \
+          | awk '{print $2}' \
           | grep -Eo '([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}' \
           | sort -u \
-          | sed 's/^/||/' | sed 's/$/^/' >> $output_file
+          | sed 's/^/||/' | sed 's/$/^/' >> "$output_file"
         }
 
-        format_list rawlists/0xerr-raw.txt 0xerr-tb.txt "0xERR0R Tracking Blocklist" "Domains from 0xERR0R's aggressive tracking list"
-        format_list rawlists/lightswitch05-raw.txt lightswitch05-tb.txt "Lightswitch05 Tracking Blocklist" "Domains from Lightswitch05's tracking-extended list"
-        format_list rawlists/osint-raw.txt osint-tb.txt "OSINT Tracking Blocklist" "Domains from Joeylane's OSINT tracking list"
-        format_list rawlists/hagezi-ti-raw.txt hagezi-ti-tb.txt "HaGeZi TI Default Blocklist" "Domains from HaGeZi Threat Intelligence Default list"
+        format_list rawlists/0xerr-raw.txt 0xerr-tb.txt "0xERR0R Tracking Blocklist" "Domains from 0xERR0R's aggressive tracker list reformatted for AdGuard"
+        format_list rawlists/osint-raw.txt osint-tb.txt "Joeylane OSINT Tracker Blocklist" "Domains from Joeylane's OSINT tracker list reformatted for AdGuard"
+        format_list rawlists/hagezi-ti-raw.txt hagezi-ti-tb.txt "HaGeZi TI Default Blocklist" "Domains from HaGeZi Threat Intelligence Default list reformatted for AdGuard"
 
     - name: Commit and push updates
       run: |
