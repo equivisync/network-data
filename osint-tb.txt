@@ -3,7 +3,7 @@
 ! Description: Domains from the OSINT Tracking list
 ! Homepage: https://github.com/equivisync/network-data
 ! Expires: 1 day
-! Last modified: 19 May 2025 05:39 UTC
+! Last modified: 20 May 2025 05:16 UTC
 ! Syntax: Adblock
 ! Number of entries: auto
 !
