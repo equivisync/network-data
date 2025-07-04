@@ -3,7 +3,7 @@
 ! Description: Domains from HaGeZi TI Default list
 ! Homepage: https://github.com/equivisync/network-data
 ! Expires: 1 day
-! Last modified: 03 Jul 2025 05:20 UTC
+! Last modified: 04 Jul 2025 05:19 UTC
 ! Syntax: Adblock
 ! Number of entries: auto
 !
